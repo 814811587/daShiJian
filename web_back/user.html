@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="css/iconfont.css">
     <link rel="stylesheet" href="css/main.css">
     <script src="js/jquery-1.12.4.min.js"></script>
+    <script src="./js/bootstrap/js/bootstrap.min.js"></script>
 
 </head>
 
@@ -24,7 +25,7 @@
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">用户名称：</label>
                     <div class="col-sm-4">
-                        <input type="text"  name='username' class="form-control username" value="李思思">
+                        <input type="text" name="username" class="form-control username" value="李思思">
                     </div>
                 </div>
                 <div class="form-group">
@@ -41,23 +42,24 @@
                 </div>
 
                 <div class="form-group">
-                        <label for="inputPassword3" class="col-sm-2 control-label">用户图标：</label>
-                        <div class="col-sm-10">
-                            <img src="images/2.jpg" alt="" class="user_pic">
-                            <input type="file" style="display: none" name="user_pic" id="exampleInputFile">
-                            <br>
-                            <label for="exampleInputFile">
-                                <img src="./images//uploadFileIcon.png" alt="">
-                            </label>
-                        </div>
+                    <label for="inputPassword3" class="col-sm-2 control-label">用户图标：</label>
+                    <div class="col-sm-10">
+                        <img src="images/2.jpg" alt="" class="user_pic">
+                        <input type="file" name="user_pic" id="exampleInputFile">
+                        <br>
+                        <label for="exampleInputFile">
+                            <img src="./images//uploadFileIcon.png" alt="">
+                        </label>
                     </div>
-    
-                    <div class="form-group">
-                        <label for="inputEmail3" class="col-sm-2 control-label">密码：</label>
-                        <div class="col-sm-4">
-                            <input type="password" name="password" class="form-control password" value="12345678">
-                        </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputEmail3" class="col-sm-2 control-label">密码：</label>
+                    <div class="col-sm-4">
+                        <input type="password" name="password" class="form-control password" value="12345678">
                     </div>
+                </div>
+
 
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
@@ -67,6 +69,7 @@
             </form>
         </div>
     </div>
+
     <!-- Modal -->
     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
         <div class="modal-dialog" role="document">
@@ -85,13 +88,15 @@
             </div>
         </div>
     </div>
-</body>
-<script src="./js/bootstrap/js/bootstrap.min.js"></script>
-<script>
-    //        用户头像预览
-    $(function () {
 
-        $.ajax({
+    <script>
+        $(function () {
+            /*
+            步骤:
+            进到个人中心,发送ajax请求,获取到个人信息.
+            把个人信息显示在对应的标签中.
+            */
+            $.ajax({
                 url: 'http://localhost:8000/admin/userinfo_get',
                 success: function (backData) {
                     console.log(backData);
@@ -111,14 +116,16 @@
                 }
             });
 
-        // 1.给input:file标签设置一个change事件.
-     $('#exampleInputFile').on('change', function () {
+
+            //1.个人头像图片预览
+            $('#exampleInputFile').on('change', function () {
                 var icon = this.files[0]; //获取这个标签选中的文件.
                 var url = URL.createObjectURL(icon); //生成一个url地址
                 $(this).prev().attr('src', url); //把路径设置为img的src
             });
 
-        $('.btn-modifiy').on('click', function (e) {
+            // 2.点击修改按钮,发送ajax请求.
+            $('.btn-modifiy').on('click', function (e) {
                 //阻止默认跳转
                 e.preventDefault();
                 //3.创建formData对象.
@@ -136,7 +143,8 @@
                             $('#myModal').modal()
                         }
 
-                    $('.btn-primary').on('click', function () {
+                        //给模态框的确定按钮一个点击事件.
+                        $('.btn-primary').on('click', function () {
                             //刷新. 是刷新外面那个父窗口的location.
                             // parent.window.location.reload();
 
@@ -155,12 +163,14 @@
                             $('#myModal').modal('hide'); //隐藏模态框
 
                         });
-                  
-                }
+                    }
+                });
+            });
+            // 	注意:jQuery结合FormData
 
-            })
-        })
-    });
-</script>
+
+
+        });
+    </script>
 
 </html>
