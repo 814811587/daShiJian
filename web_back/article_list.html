@@ -160,11 +160,7 @@
                         <td>管理员</td>
                         <td>奇趣事</td>
                         <td class="text-center">2017-04-03 20:16:34</td>
-
-
                         <td class="text-center">草稿</td>
-
-
                         <td class="text-center">
                             <a href="post-edit.html?id=1000" class="btn btn-default btn-xs">编辑</a>
                             <a href="javascript:deleteTr( 1000 );" class="btn btn-danger btn-xs">删除</a>
@@ -285,8 +281,8 @@
                  <td class="text-center">{{v.date}}</td>
                  <td class="text-center">{{v.state}}</td>
                  <td class="text-center">
-                     <a href="article_edit.html" data-id="{{v.id}}" class="btn btn-default btn-xs">编辑</a>
-                     <a href="" data-id="{{v.id}}" class="btn btn-danger btn-xs">删除</a>
+                     <a href="article_edit.html?id={{v.id}}" class="btn btn-default btn-xs btn-bianji">编辑</a>
+                     <a href="" data-id="{{v.id}}" class="btn btn-danger btn-xs btn-shanchu">删除</a>
                  </td>
              </tr>
        {{/each}}
@@ -298,6 +294,7 @@
         })
 
         $(function () {
+
             //进入到文章列表,显示所有的文章类别
             // 发送ajax请求
             $.ajax({
@@ -312,11 +309,6 @@
                     }
                 }
             });
-
-
-
-
-
 
             //声明一个变量,用来记录当前的页码条上面的数.
             var myTotalPage = 10;
@@ -359,10 +351,10 @@
                             $('tbody').html(resHtml)
                              
                             var totalPages = backData.totalPage;
-
+                            window.currentPage = $pagination.twbsPagination('getCurrentPage');
                             if (myTotalPage != totalPages) {
                                 myTotalPage =totalPages;
-                                var currentPage = $pagination.twbsPagination('getCurrentPage');
+                          
                                 $pagination.twbsPagination('destroy');
                                 $pagination.twbsPagination($.extend({}, defaultOpts, {
                                     startPage: 1,
@@ -375,19 +367,37 @@
             }
             // shaixuan()
 
-
-
-
-
-
             //点击筛选搜索相应的文章
             $('#btnSearch').on('click', function (e) {
                 e.preventDefault();
                 //获取文章类别的id,
                 shaixuan(1)
-
+                
+            })
+        
+        //  删除文章使用委托事件 因为是动态的
+        $('tbody').on('click','.btn-shanchu', function(e){3
+            // 阻止a标签跳转
+            e.preventDefault();
+            // 获取当前要删除的id
+            var id = $(this).attr('data-id')
+            console.log(id);
+            $.ajax({
+                url:'http://localhost:8000/admin/article_delete',
+                data:{
+                    id:id
+                },
+                success:function(backData){
+                    console.log(backData);
+                    if(backData.code == 200) {
+                       shaixuan(currentPage)
+                    }
+                }
             })
         })
+    })
+        
+
     </script>
 
 </body>

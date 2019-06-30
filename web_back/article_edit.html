@@ -27,20 +27,20 @@
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章标题：</label>
                     <div class="col-sm-10">
-                        <input type="email" class="form-control" id="inputEmail3" value="文章标题文字">
+                        <input type="text" name="title" class="form-control btn-title" id="inputEmail3" value="文章标题文字">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputPassword3" class="col-sm-2 control-label">文章封面：</label>
                     <div class="col-sm-10">
-                        <img src="images/pic06.jpg" class="article_cover">
+                        <img src="images/pic06.jpg" class="article_cover btn_cover">
                         <input type="file" id="exampleInputFile">
                     </div>
                 </div>
                 <div class="form-group">
                     <label for="inputEmail3" class="col-sm-2 control-label">文章类别：</label>
                     <div class="col-sm-4">
-                        <select class="form-control">
+                        <select name="type" class="form-control btn_moban btn_type">
                             <option>类别一</option>
                             <option>类别二</option>
                             <option>类别三</option>
@@ -54,7 +54,7 @@
                     <div class="col-sm-4">
 
                         <div class="input-group">
-                            <input type="text" class="form-control" value="2019-05-17" id="dateinput">
+                            <input type="text" name="date" class="form-control btnmoban btn_date" value="2019-05-17" id="dateinput">
                             <span class="input-group-btn">
                                 <button class="btn btn-default" type="button"
                                     onclick="jeDate('#dateinput',{trigger:false,format: 'YYYY-MM-DD'})"><i
@@ -64,14 +64,15 @@
                     </div>
                 </div>
                 <div class="form-group">
-                    <label for="inputEmail3" class="col-sm-2 control-label">文章内容：</label>
+                    <label for="inputEmail3" name="content" class="col-sm-2 control-label btn_intro">文章内容：</label>
                     <div class="col-sm-10">
-                        <input type="text" class="form-control" id="rich_content" name="content" placeholder="文章内容" value="文章内容">
+                        <input type="text" class="form-control" id="rich_content" name="content" placeholder="文章内容"
+                            value="文章内容">
                     </div>
                 </div>
                 <div class="form-group">
                     <div class="col-sm-offset-2 col-sm-10">
-                        <button type="submit" class="btn btn-success">修改</button>
+                        <button type="submit" class="btn btnmoban btn_xiugai">修改</button>
                     </div>
                 </div>
             </form>
@@ -79,5 +80,79 @@
     </div>
 
 </body>
+<script src="./js/template-web.js"></script>
+<script id="tmp_cate" type="text/html">
+    {{each data}}
+    <option value="{{$value.id}}">{{$value.name}}</option>
+    {{/each}} 
+ </script>
+<script>
+     
+    //  图片预览
+    $('#exampleInputFile').on('change',function(){
+        var fff = this.files[0];
+        console.log(fff);
+        var url = URL.createObjectURL(fff);
+        $('.article_cover').attr('src',url)
+        
+    })
+
+    //一进到文章编辑页面,就要获取文章类别
+    $.ajax({
+        url: 'http://localhost:8000/admin/category_search',
+        success: function (backData) {
+            console.log(backData);
+            if (backData.code == 200) {
+                //把这些文章分类信息, 通过模板引擎渲染到页面上.
+                //调用模板引擎核心方法.
+                var resHtml = template('tmp_cate', backData);
+                //渲染到tbody
+                $('.btn_moban').html(resHtml);;
+            }
+        }
+    });
+
+    //文章编辑第一步
+    //2.在编辑页面 通过url的截取(window.location.search)拿到文章id
+    var id = window.location.search.split("=")[1];
+
+    
+    //3.发送ajax请求(文章搜索的请求)
+
+    $.ajax({
+        url: 'http://localhost:8000/admin/search',
+        data: {
+            id: id
+        },
+        success: function (backData) {
+            console.log(backData);
+            if(backData.code == 200){
+                $('.btn-title').val(backData.data.title);
+                console.log(backData.data.title);
+                $('.btn_cover').attr('src',backData.data.cover);
+                $('.btn_date').val(backData.data.date)
+                $('#rich_content').val(backData.data.content)
+                $('.btn_type').val(backData.data.type)
+            }
+        }
+    });
+
+    $('.btn_xiugai').on('click',function(){
+
+        var form_data = new FormData($('form')[0]);
+        // var btn_data = $('btn_cover').attr('src',) 
+        form_data.append('id',id) //需要编辑文字的id
+        form_data.append('content', tinyMCE.activeEditor.getContent()); //富文本编辑器的内容追加到formData中
+        $.ajax({
+            type:'post',
+            data:form_data,
+            contentType:false,
+            processData:false,
+            success:function(backData){
+             console.log(backData);
+            }
+        })
+    })
+</script>
 
 </html>
