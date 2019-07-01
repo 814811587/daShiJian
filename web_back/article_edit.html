@@ -137,14 +137,15 @@
         }
     });
 
-    $('.btn_xiugai').on('click',function(){
-
+    $('.btn_xiugai').on('click',function(e){
+        e.preventDefault();
         var form_data = new FormData($('form')[0]);
         // var btn_data = $('btn_cover').attr('src',) 
         form_data.append('id',id) //需要编辑文字的id
         form_data.append('content', tinyMCE.activeEditor.getContent()); //富文本编辑器的内容追加到formData中
         $.ajax({
             type:'post',
+            url:'http://localhost:8000/admin/article_edit',
             data:form_data,
             contentType:false,
             processData:false,
